@@ -1,12 +1,12 @@
 package com.lgior.split
 
 import com.lgior.split.tokenizer.StringTokenizer
-import com.lgior.split.index.IndexCollector
+import com.lgior.split.index.SubStringValueInterpreter
 
-class Splitter(private val indexCollector: IndexCollector, private val tokenizer: StringTokenizer) {
+class Splitter(private val indexCollector: SubStringValueInterpreter, private val tokenizer: StringTokenizer) {
 
 	fun split(string: String, delimiter: String): List<String> {
-		val index = indexCollector.collect(string, delimiter)
+		val index = indexCollector.excluding(string, delimiter)
 		if (index.isEmpty()) {
 			return listOf(string)
 		}

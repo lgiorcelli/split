@@ -1,5 +1,5 @@
-import com.lgior.split.index.Index
-import com.lgior.split.index.IndexCollector
+import com.lgior.split.index.Range
+import com.lgior.split.index.SubStringValueInterpreter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -9,7 +9,7 @@ import java.lang.RuntimeException
 class IndexCollectorShould {
 
 	lateinit var toSearch: String
-	lateinit var index: List<Index>
+	lateinit var index: List<Range>
 	lateinit var string: String
 
 	@Before
@@ -22,9 +22,9 @@ class IndexCollectorShould {
 		string = "AA12AA"
 		toSearch = "12"
 
-		index = IndexCollector().collect(string, toSearch)
+		index = SubStringValueInterpreter().excluding(string, toSearch)
 
-		assertThat(index).containsExactly(Index(0, 2), Index(4, 6))
+		assertThat(index).containsExactly(Range(0, 2), Range(4, 6))
 	}
 
 	@Test
@@ -32,9 +32,9 @@ class IndexCollectorShould {
 		string = "12345678"
 		toSearch = "12"
 
-		index = IndexCollector().collect(string, toSearch)
+		index = SubStringValueInterpreter().excluding(string, toSearch)
 
-		assertThat(index).containsExactly(Index(2, 8))
+		assertThat(index).containsExactly(Range(2, 8))
 	}
 
 	@Test
@@ -42,9 +42,9 @@ class IndexCollectorShould {
 		string = "12341234"
 		toSearch = "12"
 
-		index = IndexCollector().collect(string, toSearch)
+		index = SubStringValueInterpreter().excluding(string, toSearch)
 
-		assertThat(index).containsExactly(Index(2, 4), Index(6, 8))
+		assertThat(index).containsExactly(Range(2, 4), Range(6, 8))
 	}
 
 	@Test
@@ -52,9 +52,9 @@ class IndexCollectorShould {
 		string = "123123123"
 		toSearch = "12"
 
-		index = IndexCollector().collect(string, toSearch)
+		index = SubStringValueInterpreter().excluding(string, toSearch)
 
-		assertThat(index).containsExactly(Index(2, 3), Index(5, 6), Index(8, 9))
+		assertThat(index).containsExactly(Range(2, 3), Range(5, 6), Range(8, 9))
 	}
 
 	@Test
@@ -62,9 +62,9 @@ class IndexCollectorShould {
 		string = "ABCDE12"
 		toSearch = "12"
 
-		index = IndexCollector().collect(string, toSearch)
+		index = SubStringValueInterpreter().excluding(string, toSearch)
 
-		assertThat(index).containsExactly(Index(0, 5))
+		assertThat(index).containsExactly(Range(0, 5))
 	}
 
 	@Test(expected = RuntimeException::class)
@@ -72,7 +72,7 @@ class IndexCollectorShould {
 		string = "123456"
 		toSearch = ""
 
-		index = IndexCollector().collect(string, toSearch)
+		index = SubStringValueInterpreter().excluding(string, toSearch)
 	}
 
 	@After

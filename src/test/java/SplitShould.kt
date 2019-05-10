@@ -1,12 +1,12 @@
 import com.lgior.split.Splitter
-import com.lgior.split.index.IndexCollector
+import com.lgior.split.index.SubStringValueInterpreter
 import com.lgior.split.tokenizer.StringTokenizer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.ListAssert
 import org.junit.Test
 
 class SplitShould {
-	private val collector = IndexCollector()
+	private val collector = SubStringValueInterpreter()
 	private val tokenizer = StringTokenizer()
 
 	private val splitter = Splitter(collector, tokenizer)
