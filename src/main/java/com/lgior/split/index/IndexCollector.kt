@@ -1,8 +1,13 @@
 package com.lgior.split.index
 
+import java.lang.RuntimeException
+
 class IndexCollector {
 
 	fun collect(input: String, toSearch: String): List<Index> {
+		if (toSearch.isBlank()) {
+			throw RuntimeException("Can not collect values for an empty value to search")
+		}
 		if (thereIsNoMatch(input, toSearch)) {
 			return emptyList()
 		}

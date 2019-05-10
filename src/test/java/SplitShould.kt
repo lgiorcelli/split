@@ -1,13 +1,15 @@
+import com.lgior.split.Splitter
 import com.lgior.split.index.IndexCollector
+import com.lgior.split.tokenizer.StringTokenizer
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
+import org.assertj.core.api.ListAssert
 import org.junit.Test
 
 class SplitShould {
-	val collector = IndexCollector()
-	val tokenizer = StringTokenizer()
+	private val collector = IndexCollector()
+	private val tokenizer = StringTokenizer()
 
-	val splitter = Splitter(collector, tokenizer)
+	private val splitter = Splitter(collector, tokenizer)
 
 	@Test
 	fun `return an array with only one object if there is no match`() {
@@ -18,30 +20,20 @@ class SplitShould {
 		assertThat(result).containsOnly(string)
 	}
 
-	@Ignore
 	@Test
 	fun `split in elements when there is a match`() {
-		val string = "a,b,c"
-
-		val result = splitter.split(string, ",")
-
-		assertThat(result).containsExactly("a", "b", "c")
+		splitting("a,b,c", ",").containsExactly("a", "b", "c")
+		splitting("a,b,c", "b").containsExactly("a,", ",c")
+		splitting("a,b,c", "a").containsExactly(",b,c")
+		splitting("a,b,c", "c").containsExactly("a,b,")
+		splitting("", "a").containsExactly("")
+		splitting("ABABABABABA", "BAB").containsExactly("A","A", "ABA")
+		splitting("ABABABABABAB", "BAB").containsExactly("A","A", "A")
 	}
 
-	@Test
-	fun testName() {
-		val string = "abcbd"
-
-		val result = splitter.split(string, "bc")
-
-		assertThat(result).containsExactly("a", "bd")
+	private fun splitting(string: String, delimiter: String): ListAssert<String> {
+		return assertThat(splitter.split(string, delimiter))
 	}
+
 }
 
-class Splitter(private val indexCollector: IndexCollector, private val tokenizer: StringTokenizer) {
-
-	fun split(string: String, delimiter: String): List<String> {
-		val index = indexCollector.collect(string, delimiter)
-		return tokenizer.tokenize(string, index)
-	}
-}
