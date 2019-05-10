@@ -1,55 +1,47 @@
-import org.assertj.core.api.Assertions
+import com.lgior.split.index.IndexCollector
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Ignore
 import org.junit.Test
 
 class SplitShould {
+	val collector = IndexCollector()
+	val tokenizer = StringTokenizer()
+
+	val splitter = Splitter(collector, tokenizer)
 
 	@Test
 	fun `return an array with only one object if there is no match`() {
 		val string = "basic_example"
 
-		val result = Splitter().split(string, "xxx")
+		val result = splitter.split(string, "xxx")
 
-		Assertions.assertThat(result).containsOnly(string)
+		assertThat(result).containsOnly(string)
 	}
 
 	@Ignore
 	@Test
 	fun `split in elements when there is a match`() {
-		val string = "a,b"
+		val string = "a,b,c"
 
-		val result = Splitter().split(string, ",")
+		val result = splitter.split(string, ",")
 
-		Assertions.assertThat(result).containsExactly("a", "b")
+		assertThat(result).containsExactly("a", "b", "c")
+	}
+
+	@Test
+	fun testName() {
+		val string = "abcbd"
+
+		val result = splitter.split(string, "bc")
+
+		assertThat(result).containsExactly("a", "bd")
 	}
 }
 
-class Splitter {
+class Splitter(private val indexCollector: IndexCollector, private val tokenizer: StringTokenizer) {
 
 	fun split(string: String, delimiter: String): List<String> {
-		val indexes = mutableListOf<Int>()
-		var index = string.indexOf(delimiter)
-
-		while (index != -1) {
-			indexes.add(index)
-			index = string.indexOf(delimiter, ++index)
-		}
-
-		if (indexes.isEmpty()) {
-			return listOf(string)
-		}
-
-
-		val chunks = mutableListOf<String>()
-		var startIndex = 0
-		var end = 0
-		indexes.forEach {
-			end = it
-			val chunk = string.substring(startIndex, end)
-			chunks.add(chunk)
-			startIndex = end
-		}
-
-		return chunks
+		val index = indexCollector.collect(string, delimiter)
+		return tokenizer.tokenize(string, index)
 	}
 }

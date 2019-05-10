@@ -11,12 +11,21 @@ class IndexCollectorShould {
 	lateinit var string: String
 
 	@Test
-	fun `collect one index when string has one match`() {
+	fun `collect two index when match is in the middle of string`() {
+		string = "AA12AA"
+
+		index = IndexCollector().collect(string, toSearch)
+
+		assertThat(index).containsExactly(Index(0, 2), Index(4, 6))
+	}
+
+	@Test
+	fun `collect one index when string has one match at start`() {
 		string = "12345678"
 
 		index = IndexCollector().collect(string, toSearch)
 
-		assertThat(index).containsExactly(Index(0, 2))
+		assertThat(index).containsExactly(Index(2, 8))
 	}
 
 	@Test
@@ -25,7 +34,7 @@ class IndexCollectorShould {
 
 		index = IndexCollector().collect(string, toSearch)
 
-		assertThat(index).containsExactly(Index(0, 2), Index(4, 6))
+		assertThat(index).containsExactly(Index(2, 4), Index(6, 8))
 	}
 
 	@Test
@@ -34,7 +43,16 @@ class IndexCollectorShould {
 
 		index = IndexCollector().collect(string, toSearch)
 
-		assertThat(index).containsExactly(Index(0, 2), Index(3, 5), Index(6, 8))
+		assertThat(index).containsExactly(Index(2, 3), Index(5, 6), Index(8, 9))
+	}
+
+	@Test
+	fun `collect misses at the start`() {
+		string = "ABCDE12"
+
+		index = IndexCollector().collect(string, toSearch)
+
+		assertThat(index).containsExactly(Index(0, 5))
 	}
 
 	@After
